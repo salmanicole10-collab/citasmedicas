@@ -28,3 +28,16 @@ def main(page: ft.Page):
                 "fecha": fecha.value,
                 "hora": hora.value
             }
+
+            citas.append(cita)
+
+            mensaje.value = "Cita guardada correctamente"
+            mensaje.color = "green"
+
+            # Limpiar campos
+            nombre.value = ""
+            medico.value = ""
+            fecha.value = ""
+            hora.value = ""
+
+        page.update()
