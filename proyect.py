@@ -10,7 +10,7 @@ def main(page: ft.Page):
     # mensaje de estado
     mensaje = ft.Text("")
 
-    # campos de entrada
+    # datos
     nombre = ft.TextField(label="Nombre del paciente")
     medico = ft.TextField(label="Médico")
     fecha = ft.TextField(label="Fecha (dd/mm/aaaa)")
