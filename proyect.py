@@ -15,3 +15,16 @@ def main(page: ft.Page):
     medico = ft.TextField(label="Médico")
     fecha = ft.TextField(label="Fecha (dd/mm/aaaa)")
     hora = ft.TextField(label="Hora (ej: 10:00 AM)")
+
+    def guardar_cita(e):
+        if nombre.value == "" or medico.value == "" or fecha.value == "" or hora.value == "":
+            mensaje.value = "Por favor llena todos los campos"
+            mensaje.color = "red"
+        else:
+            # Guardar datos en la lista
+            cita = {
+                "nombre": nombre.value,
+                "medico": medico.value,
+                "fecha": fecha.value,
+                "hora": hora.value
+            }
