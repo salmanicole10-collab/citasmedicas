@@ -41,3 +41,17 @@ def main(page: ft.Page):
             hora.value = ""
 
         page.update()
+
+    page.add(
+        ft.Text("Sistema de Citas Médicas", size=24, weight="bold"),
+        ft.Text("Avance: Registro básico de citas"),
+        ft.Divider(),
+        nombre,
+        medico,
+        fecha,
+        hora,
+        ft.ElevatedButton("Guardar cita", on_click=guardar_cita),
+        mensaje
+    )
+
+ft.app(target=main)
