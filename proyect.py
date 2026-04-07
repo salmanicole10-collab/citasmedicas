@@ -4,7 +4,7 @@ def main(page: ft.Page):
     page.title = "Sistema de Citas Médicas"
     page.padding = 20
 
-    # lista para guardar citas (simula base de datos)
+    # lista pa guardar citas 
     citas = []
 
     # mensaje de estado
@@ -21,7 +21,7 @@ def main(page: ft.Page):
             mensaje.value = "Por favor llena todos los campos"
             mensaje.color = "red"
         else:
-            # Guardar datos en la lista
+            # save datos en la lista
             cita = {
                 "nombre": nombre.value,
                 "medico": medico.value,
@@ -34,7 +34,7 @@ def main(page: ft.Page):
             mensaje.value = "Cita guardada correctamente"
             mensaje.color = "green"
 
-            # Limpiar campos
+            # limpiar campos
             nombre.value = ""
             medico.value = ""
             fecha.value = ""
