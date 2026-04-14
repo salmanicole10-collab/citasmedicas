@@ -95,8 +95,10 @@ def main(page: ft.Page):
         ft.Divider(),
         nombre,
         medico,
+        tipo_medico,
         fecha,
         hora,
+        estado,
         ft.ElevatedButton("Guardar cita", on_click=guardar_cita),
         mensaje
     )
