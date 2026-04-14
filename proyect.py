@@ -41,17 +41,38 @@ def main(page: ft.Page):
 
 
     def guardar_cita(e):
-        if nombre.value == "" or medico.value == "" or fecha.value == "" or hora.value == "":
+        if (
+            nombre.value == "" or
+            medico.value == "" or
+            fecha.value == "" or
+            hora.value == "" or
+            tipo_medico.value is None or
+            estado.value is None
+        ):
             mensaje.value = "Por favor llena todos los campos"
             mensaje.color = "red"
-        else:
+        
+        else:     # validar que el medico no tenga otra cita a la mima hora
+            for c in citas:
+                if (
+                    c["medico"].lower() == medico.value.lower() and
+                    c["fecha"] == fecha.value and
+                    c["hora"].lower() == hora.value.lower()
+                ):
+                    mensaje.value = "Ese médico ya tiene una cita en esa fecha y hora"
+                    mensaje.color = "red"
+                    page.update()
+                    return
+                
             # save datos en la lista
             cita = {
                 "nombre": nombre.value,
                 "medico": medico.value,
+                "tipo_medico": tipo_medico.value,
                 "fecha": fecha.value,
-                "hora": hora.value
-            }
+                "hora": hora.value,
+                "estado": estado.value
+                  }
 
             citas.append(cita)
 
@@ -63,6 +84,8 @@ def main(page: ft.Page):
             medico.value = ""
             fecha.value = ""
             hora.value = ""
+            tipo_medico.value = None
+            estado.value = "Programada"
 
         page.update()
 
