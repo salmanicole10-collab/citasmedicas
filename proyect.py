@@ -39,6 +39,45 @@ def main(page: ft.Page):
         value="Programada"
     )
 
+    # lista visual de citas
+    lista_citas = ft.Column()
+
+    def actualizar_lista():
+        lista_citas.controls.clear()
+
+        if len(citas) == 0:
+            lista_citas.controls.append(
+                ft.Text("No hay citas registradas todavía.")
+            )
+        else:
+            for i, cita in enumerate(citas):
+                lista_citas.controls.append(
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.Column([
+                                ft.Text(f"Paciente: {cita['nombre']}"),
+                                ft.Text(f"Médico: {cita['medico']}"),
+                                ft.Text(f"Tipo: {cita['tipo_medico']}"),
+                                ft.Text(f"Fecha: {cita['fecha']}"),
+                                ft.Text(f"Hora: {cita['hora']}"),
+                                ft.Text(f"Estado: {cita['estado']}"),
+                            ]),
+                            ft.IconButton(
+                                icon=ft.icons.DELETE,
+                                on_click=lambda e, idx=i: eliminar_cita(idx)
+                            )
+                        ]
+                    )
+                )
+
+        page.update()
+
+    def eliminar_cita(indice):
+        citas.pop(indice)
+        mensaje.value = "Cita eliminada correctamente"
+        mensaje.color = "orange"
+        actualizar_lista()
 
     def guardar_cita(e):
         if (
@@ -51,8 +90,10 @@ def main(page: ft.Page):
         ):
             mensaje.value = "Por favor llena todos los campos"
             mensaje.color = "red"
-        
-        else:     # validar que el medico no tenga otra cita a la mima hora
+
+        else:
+
+            # validar que el medico no tenga otra cita a la mima hora
             for c in citas:
                 if (
                     c["medico"].lower() == medico.value.lower() and
@@ -63,7 +104,7 @@ def main(page: ft.Page):
                     mensaje.color = "red"
                     page.update()
                     return
-                
+
             # save datos en la lista
             cita = {
                 "nombre": nombre.value,
@@ -72,7 +113,7 @@ def main(page: ft.Page):
                 "fecha": fecha.value,
                 "hora": hora.value,
                 "estado": estado.value
-                  }
+            }
 
             citas.append(cita)
 
@@ -87,6 +128,7 @@ def main(page: ft.Page):
             tipo_medico.value = None
             estado.value = "Programada"
 
+        actualizar_lista()
         page.update()
 
     page.add(
@@ -100,7 +142,12 @@ def main(page: ft.Page):
         hora,
         estado,
         ft.ElevatedButton("Guardar cita", on_click=guardar_cita),
-        mensaje
+        mensaje,
+        ft.Divider(),
+        ft.Text("Citas registradas"),
+        lista_citas
     )
+
+    actualizar_lista()
 
 ft.app(target=main)
