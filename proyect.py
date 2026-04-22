@@ -67,30 +67,23 @@ def init_db():
     conn.commit()
     conn.close()
     
-        else:
+    def main(page: ft.Page):
+    page.title = "Sistema de Citas Médicas"
+    page.padding = 15
+    page.window_width = 1200
+    page.window_height = 750
+    page.scroll = ft.ScrollMode.AUTO
 
-            # validar que el medico no tenga otra cita a la mima hora
-            for c in citas:
-                if (
-                    c["medico"].lower() == medico.value.lower() and
-                    c["fecha"] == fecha.value and
-                    c["hora"].lower() == hora.value.lower()
-                ):
-                    mensaje.value = "Ese médico ya tiene una cita en esa fecha y hora"
-                    mensaje.color = "red"
-                    page.update()
-                    return
+    init_db()
 
-            # save datos en la lista
-            cita = {
-                "nombre": nombre.value,
-                "medico": medico.value,
-                "tipo_medico": tipo_medico.value,
-                "fecha": fecha.value,
-                "hora": hora.value,
-                "estado": estado.value
-            }
+    content_area = ft.Container(expand=True)
+    status_text = ft.Text("Sistema listo", color=ft.Colors.GREEN)
 
+    def show_message(text, color=ft.Colors.BLUE):
+        status_text.value = text
+        status_text.color = color
+        page.update()
+        
             citas.append(cita)
 
             mensaje.value = "Cita guardada correctamente"
