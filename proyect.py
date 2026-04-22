@@ -1,32 +1,28 @@
 import flet as ft
+import sqlite3
 
-def main(page: ft.Page):
-    page.title = "Sistema de Citas Médicas"
-    page.padding = 20
+DB_NAME = "clinic_system.db"
 
-    # lista pa guardar citas 
-    citas = []
 
-    # mensaje de estado
-    mensaje = ft.Text("")
+def get_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-    # datos
-    nombre = ft.TextField(label="Nombre del paciente")
-    medico = ft.TextField(label="Médico")
-    fecha = ft.TextField(label="Fecha (dd/mm/aaaa)")
-    hora = ft.TextField(label="Hora (ej: 10:00 AM)")
 
-    tipo_medico = ft.Dropdown(
-        label="Tipo de médico",
-        options=[
-            ft.dropdown.Option("General"),
-            ft.dropdown.Option("Pediatra"),
-            ft.dropdown.Option("Cardiólogo"),
-            ft.dropdown.Option("Dermatólogo"),
-            ft.dropdown.Option("Ginecólogo"),
-            ft.dropdown.Option("Odontólogo")
-        ]
-    )
+def init_db():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS patients (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            full_name TEXT NOT NULL,
+            age INTEGER NOT NULL,
+            phone TEXT NOT NULL,
+            email TEXT
+        )
+    """)
 
     estado = ft.Dropdown(
         label="Estado de la cita",
