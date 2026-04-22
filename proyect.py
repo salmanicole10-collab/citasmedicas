@@ -24,50 +24,29 @@ def init_db():
         )
     """)
 
-    estado = ft.Dropdown(
-        label="Estado de la cita",
-        options=[
-            ft.dropdown.Option("Programada"),
-            ft.dropdown.Option("Completada"),
-            ft.dropdown.Option("Cancelada"),
-            ft.dropdown.Option("Perdida")
-        ],
-        value="Programada"
-    )
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS doctors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            full_name TEXT NOT NULL,
+            specialty TEXT NOT NULL,
+            phone TEXT NOT NULL
+        )
+    """)
 
-    # lista visual de citas
-    lista_citas = ft.Column()
-
-    def actualizar_lista():
-        lista_citas.controls.clear()
-
-        if len(citas) == 0:
-            lista_citas.controls.append(
-                ft.Text("No hay citas registradas todavía.")
-            )
-        else:
-            for i, cita in enumerate(citas):
-                lista_citas.controls.append(
-                    ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        controls=[
-                            ft.Column([
-                                ft.Text(f"Paciente: {cita['nombre']}"),
-                                ft.Text(f"Médico: {cita['medico']}"),
-                                ft.Text(f"Tipo: {cita['tipo_medico']}"),
-                                ft.Text(f"Fecha: {cita['fecha']}"),
-                                ft.Text(f"Hora: {cita['hora']}"),
-                                ft.Text(f"Estado: {cita['estado']}"),
-                            ]),
-                            ft.IconButton(
-                                icon=ft.icons.DELETE,
-                                on_click=lambda e, idx=i: eliminar_cita(idx)
-                            )
-                        ]
-                    )
-                )
-
-        page.update()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS appointments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id INTEGER NOT NULL,
+            doctor_id INTEGER NOT NULL,
+            appointment_date TEXT NOT NULL,
+            appointment_time TEXT NOT NULL,
+            status TEXT NOT NULL CHECK(status IN ('Programada', 'Completada', 'Cancelada', 'Perdida')),
+            notes TEXT,
+            FOREIGN KEY (patient_id) REFERENCES patients(id),
+            FOREIGN KEY (doctor_id) REFERENCES doctors(id),
+            UNIQUE (doctor_id, appointment_date, appointment_time)
+        )
+    """)
 
     def eliminar_cita(indice):
         citas.pop(indice)
