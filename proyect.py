@@ -48,24 +48,25 @@ def init_db():
         )
     """)
 
-    def eliminar_cita(indice):
-        citas.pop(indice)
-        mensaje.value = "Cita eliminada correctamente"
-        mensaje.color = "orange"
-        actualizar_lista()
+    cur.execute("""
+        CREATE VIEW IF NOT EXISTS appointment_summary AS
+        SELECT
+            a.id,
+            p.full_name AS patient_name,
+            d.full_name AS doctor_name,
+            d.specialty AS specialty,
+            a.appointment_date,
+            a.appointment_time,
+            a.status,
+            a.notes
+        FROM appointments a
+        JOIN patients p ON a.patient_id = p.id
+        JOIN doctors d ON a.doctor_id = d.id
+    """)
 
-    def guardar_cita(e):
-        if (
-            nombre.value == "" or
-            medico.value == "" or
-            fecha.value == "" or
-            hora.value == "" or
-            tipo_medico.value is None or
-            estado.value is None
-        ):
-            mensaje.value = "Por favor llena todos los campos"
-            mensaje.color = "red"
-
+    conn.commit()
+    conn.close()
+    
         else:
 
             # validar que el medico no tenga otra cita a la mima hora
