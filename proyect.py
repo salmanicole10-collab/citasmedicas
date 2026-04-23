@@ -84,21 +84,18 @@ def init_db():
         status_text.color = color
         page.update()
         
-            citas.append(cita)
+    def get_patients():
+        conn = get_connection()
+        rows = conn.execute("SELECT * FROM patients ORDER BY full_name").fetchall()
+        conn.close()
+        return rows
 
-            mensaje.value = "Cita guardada correctamente"
-            mensaje.color = "green"
+    def get_doctors():
+        conn = get_connection()
+        rows = conn.execute("SELECT * FROM doctors ORDER BY full_name").fetchall()
+        conn.close()
+        return rows
 
-            # limpiar campos
-            nombre.value = ""
-            medico.value = ""
-            fecha.value = ""
-            hora.value = ""
-            tipo_medico.value = None
-            estado.value = "Programada"
-
-        actualizar_lista()
-        page.update()
 
     page.add(
         ft.Text("Sistema de Citas Médicas", size=24, weight="bold"),
