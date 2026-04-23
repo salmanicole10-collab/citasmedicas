@@ -121,6 +121,27 @@ def init_db():
             """).fetchall()
         conn.close()
         return rows
+    
+    def get_counts():
+        conn = get_connection()
+        cur = conn.cursor()
+
+        total_patients = cur.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
+        total_doctors = cur.execute("SELECT COUNT(*) FROM doctors").fetchone()[0]
+        total_appointments = cur.execute("SELECT COUNT(*) FROM appointments").fetchone()[0]
+        scheduled = cur.execute("SELECT COUNT(*) FROM appointments WHERE status='Programada'").fetchone()[0]
+        completed = cur.execute("SELECT COUNT(*) FROM appointments WHERE status='Completada'").fetchone()[0]
+        canceled = cur.execute("SELECT COUNT(*) FROM appointments WHERE status='Cancelada'").fetchone()[0]
+
+        conn.close()
+        return {
+            "patients": total_patients,
+            "doctors": total_doctors,
+            "appointments": total_appointments,
+            "scheduled": scheduled,
+            "completed": completed,
+            "canceled": canceled
+        }
 
 
     page.add(
