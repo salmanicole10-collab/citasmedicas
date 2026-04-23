@@ -172,3 +172,22 @@ def dashboard_view():
                 border_radius=12,
                 bgcolor=ft.Colors.BLUE_50
             )
+        
+    return ft.Column(
+            [
+                ft.Text("Dashboard", size=26, weight=ft.FontWeight.BOLD),
+                ft.Text("Resumen general del sistema"),
+                ft.ResponsiveRow(
+                    [
+                        ft.Container(card("Pacientes", counts["patients"]), col={"sm": 6, "md": 4, "lg": 2}),
+                        ft.Container(card("Doctores", counts["doctors"]), col={"sm": 6, "md": 4, "lg": 2}),
+                        ft.Container(card("Citas", counts["appointments"]), col={"sm": 6, "md": 4, "lg": 2}),
+                        ft.Container(card("Programadas", counts["scheduled"]), col={"sm": 6, "md": 4, "lg": 2}),
+                        ft.Container(card("Completadas", counts["completed"]), col={"sm": 6, "md": 4, "lg": 2}),
+                        ft.Container(card("Canceladas", counts["canceled"]), col={"sm": 6, "md": 4, "lg": 2}),
+                    ]
+                )
+            ],
+            spacing=20,
+            scroll=ft.ScrollMode.AUTO
+        )
