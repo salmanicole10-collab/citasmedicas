@@ -67,7 +67,7 @@ def init_db():
     conn.commit()
     conn.close()
     
-    def main(page: ft.Page):
+def main(page: ft.Page):
     page.title = "Sistema de Citas Médicas"
     page.padding = 15
     page.window_width = 1200
@@ -143,7 +143,7 @@ def init_db():
             "canceled": canceled
         }
 
-def dashboard_view():
+    def dashboard_view():
         counts = get_counts()
 
         def card(title, value):
@@ -192,7 +192,7 @@ def dashboard_view():
             scroll=ft.ScrollMode.AUTO
         )
 
-def patients_view():
+    def patients_view():
         full_name = ft.TextField(label="Nombre completo", width=300)
         age = ft.TextField(label="Edad", width=150)
         phone = ft.TextField(label="Teléfono", width=200)
