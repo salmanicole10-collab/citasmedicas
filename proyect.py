@@ -228,3 +228,35 @@ def main(page: ft.Page):
                         )
                     )
             page.update()
+
+        def save_patient(e):
+            if not full_name.value or not age.value or not phone.value:
+                show_message("Completa nombre, edad y teléfono del paciente", ft.Colors.RED)
+                return
+
+            try:
+                age_value = int(age.value)
+                if age_value <= 0:
+                    show_message("La edad debe se mayor que 0", ft.Colors.RED)
+                    return
+            except ValueError:
+                show_message("La edad debe ser numérica", ft.Colors.RED)
+                return
+
+            conn = get_connection()
+            conn.execute("""
+                INSERT INTO patients (full_name, age, phone, email)
+                VALUES (?, ?, ?, ?)
+            """, (full_name.value, age_value, phone.value, email.value))
+            conn.commit()
+            conn.close()
+
+            full_name.value = ""
+            age.value = ""
+            phone.value = ""
+            email.value = ""
+
+            load_patients()
+            show_message("Paciente guardado coraectamente", ft.Colors.GREEN)
+
+        load_patients()
