@@ -95,6 +95,32 @@ def init_db():
         rows = conn.execute("SELECT * FROM doctors ORDER BY full_name").fetchall()
         conn.close()
         return rows
+    
+    def get_appointments(search_text=""):
+        conn = get_connection()
+        if search_text.strip():
+            rows = conn.execute("""
+                SELECT * FROM appointment_summary
+                WHERE patient_name LIKE ?
+                   OR doctor_name LIKE ?
+                   OR specialty LIKE ?
+                   OR appointment_date LIKE ?
+                   OR status LIKE ?
+                ORDER BY appointment_date, appointment_time
+            """, (
+                f"%{search_text}%",
+                f"%{search_text}%",
+                f"%{search_text}%",
+                f"%{search_text}%",
+                f"%{search_text}%"
+            )).fetchall()
+        else:
+            rows = conn.execute("""
+                SELECT * FROM appointment_summary
+                ORDER BY appointment_date, appointment_time
+            """).fetchall()
+        conn.close()
+        return rows
 
 
     page.add(
