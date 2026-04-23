@@ -191,3 +191,40 @@ def dashboard_view():
             spacing=20,
             scroll=ft.ScrollMode.AUTO
         )
+
+def patients_view():
+        full_name = ft.TextField(label="Nombre completo", width=300)
+        age = ft.TextField(label="Edad", width=150)
+        phone = ft.TextField(label="Teléfono", width=200)
+        email = ft.TextField(label="Email", width=250)
+        search = ft.TextField(label="Buscar paciente", width=300)
+        patient_table = ft.Column()
+
+        def load_patients(filter_text=""):
+            patient_table.controls.clear()
+            rows = get_patients()
+
+            if filter_text.strip():
+                rows = [r for r in rows if filter_text.lower() in r["full_name"].lower()]
+
+            if not rows:
+                patient_table.controls.append(ft.Text("No hay pacientes registrados"))
+            else:
+                for row in rows:
+                    patient_table.controls.append(
+                        ft.Container(
+                            content=ft.Row(
+                                [
+                                    ft.Text(f"ID: {row['id']}", width=60),
+                                    ft.Text(row["full_name"], width=250),
+                                    ft.Text(f"Edad: {row['age']}", width=100),
+                                    ft.Text(row["phone"], width=160),
+                                    ft.Text(row["email"] or "", width=220),
+                                ]
+                            ),
+                            padding=10,
+                            border=ft.border.all(1, ft.Colors.BLACK12),
+                            border_radius=8
+                        )
+                    )
+            page.update()
