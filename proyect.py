@@ -143,24 +143,32 @@ def init_db():
             "canceled": canceled
         }
 
+def dashboard_view():
+        counts = get_counts()
 
-    page.add(
-        ft.Text("Sistema de Citas Médicas", size=24, weight="bold"),
-        ft.Text("Avance: Registro básico de citas"),
-        ft.Divider(),
-        nombre,
-        medico,
-        tipo_medico,
-        fecha,
-        hora,
-        estado,
-        ft.ElevatedButton("Guardar cita", on_click=guardar_cita),
-        mensaje,
-        ft.Divider(),
-        ft.Text("Citas registradas"),
-        lista_citas
-    )
-
-    actualizar_lista()
-
-ft.app(target=main)
+        def card(title, value):
+            return ft.Container(
+                content=ft.Column(
+                    [
+                        ft.Text(
+                            title,
+                            size=16,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.Colors.BLACK
+                        ),
+                        ft.Text(
+                            str(value),
+                            size=28,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.Colors.BLACK
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                ),
+                width=220,
+                height=120,
+                padding=15,
+                border_radius=12,
+                bgcolor=ft.Colors.BLUE_50
+            )
