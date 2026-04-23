@@ -173,7 +173,7 @@ def dashboard_view():
                 bgcolor=ft.Colors.BLUE_50
             )
         
-    return ft.Column(
+        return ft.Column(
             [
                 ft.Text("Dashboard", size=26, weight=ft.FontWeight.BOLD),
                 ft.Text("Resumen general del sistema"),
