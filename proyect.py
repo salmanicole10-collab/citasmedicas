@@ -478,3 +478,66 @@ def main(page: ft.Page):
 
         load_dropdowns()
         load_appointments()
+        
+        
+        return ft.Column(
+            [
+                ft.Text("Appointments", size=26, weight=ft.FontWeight.BOLD),
+                ft.Row([patient_dropdown, doctor_dropdown], wrap=True),
+                ft.Row([appointment_date, appointment_time, status], wrap=True),
+                notes,
+                ft.ElevatedButton("Guardar cita", on_click=save_appointment),
+                ft.Divider(),
+                ft.Row(
+                    [
+                        search,
+                        ft.ElevatedButton("Buscar", on_click=lambda e: load_appointments(search.value)),
+                        ft.ElevatedButton("Mostrar todas", on_click=lambda e: load_appointments())
+                    ]
+                ),
+                appointment_table
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
+
+    def reports_view():
+        report_content = ft.Column()
+
+        def report_by_status(e=None):
+            report_content.controls.clear()
+            conn = get_connection()
+            rows = conn.execute("""
+                SELECT status, COUNT(*) AS total
+                FROM appointments
+                GROUP BY status
+                ORDER BY total DESC
+            """).fetchall()
+            conn.close()
+
+            report_content.controls.append(
+                ft.Text("Reporte: Citas por estado", size=20, weight=ft.FontWeight.BOLD)
+            )
+            for row in rows:
+                report_content.controls.append(ft.Text(f"{row['status']}: {row['total']}"))
+            page.update()
+
+        def report_by_doctor(e=None):
+            report_content.controls.clear()
+            conn = get_connection()
+            rows = conn.execute("""
+                SELECT d.full_name AS doctor_name, d.specialty, COUNT(a.id) AS total
+                FROM doctors d
+                LEFT JOIN appointments a ON d.id = a.doctor_id
+                GROUP BY d.id, d.full_name, d.specialty
+                ORDER BY total DESC, doctor_name
+            """).fetchall()
+            conn.close()
+
+            report_content.controls.append(
+                ft.Text("Reporte: Citas por doctor", size=20, weight=ft.FontWeight.BOLD)
+            )
+            for row in rows:
+                report_content.controls.append(
+                    ft.Text(f"{row['doctor_name']} ({row['specialty']}): {row['total']}")
+                )
+            page.update()
