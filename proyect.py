@@ -541,3 +541,55 @@ def main(page: ft.Page):
                     ft.Text(f"{row['doctor_name']} ({row['specialty']}): {row['total']}")
                 )
             page.update()
+        
+        def report_case(e=None):
+            report_content.controls.clear()
+            conn = get_connection()
+            rows = conn.execute("""
+                SELECT
+                    patient_name,
+                    doctor_name,
+                    appointment_date,
+                    appointment_time,
+                    status,
+                    CASE
+                        WHEN appointment_date = date('now') THEN 'Hoy'
+                        WHEN appointment_date > date('now') THEN 'Próxima'
+                        WHEN status = 'Completada' THEN 'Finalizada'
+                        WHEN status = 'Cancelada' THEN 'Cancelada'
+                        ELSE 'Pasada'
+                    END AS category
+                FROM appointment_summary
+                ORDER BY appointment_date, appointment_time
+            """).fetchall()
+            conn.close()
+
+            report_content.controls.append(
+                ft.Text("Reporte con CASE", size=20, weight=ft.FontWeight.BOLD)
+            )
+            for row in rows:
+                report_content.controls.append(
+                    ft.Text(
+                        f"{row['appointment_date']} {row['appointment_time']} | "
+                        f"{row['patient_name']} | {row['doctor_name']} | "
+                        f"{row['status']} | {row['category']}"
+                    )
+                )
+            page.update()
+
+        return ft.Column(
+            [
+                ft.Text("Reports", size=26, weight=ft.FontWeight.BOLD),
+                ft.Row(
+                    [
+                        ft.ElevatedButton("Citas por estado", on_click=report_by_status),
+                        ft.ElevatedButton("Citas por doctor", on_click=report_by_doctor),
+                        ft.ElevatedButton("Reporte con CASE", on_click=report_case),
+                    ],
+                    wrap=True
+                ),
+                ft.Divider(),
+                report_content
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
