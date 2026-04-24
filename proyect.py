@@ -613,3 +613,28 @@ def main(page: ft.Page):
     def open_reports(e=None):
         content_area.content = reports_view()
         page.update()
+        
+    sidebar = ft.Container(
+        width=220,
+        padding=10,
+        bgcolor=ft.Colors.BLUE_GREY_50,
+        border_radius=10,
+        content=ft.Column(
+            [
+                ft.Text("Menú", size=22, weight=ft.FontWeight.BOLD),
+                ft.Divider(),
+                ft.ElevatedButton("Dashboard", width=190, on_click=open_dashboard),
+                ft.ElevatedButton("Patients", width=190, on_click=open_patients),
+                ft.ElevatedButton("Doctors", width=190, on_click=open_doctors),
+                ft.ElevatedButton("Appointments", width=190, on_click=open_appointments),
+                ft.ElevatedButton("Reports", width=190, on_click=open_reports),
+                ft.Divider(),
+                status_text
+            ],
+            spacing=10
+        )
+    )
+
+    content_area.content = dashboard_view()
+
+    page.add(
