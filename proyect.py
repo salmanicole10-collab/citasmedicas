@@ -260,3 +260,221 @@ def main(page: ft.Page):
             show_message("Paciente guardado coraectamente", ft.Colors.GREEN)
 
         load_patients()
+
+        return ft.Column(
+            [
+                ft.Text("Patients", size=26, weight=ft.FontWeight.BOLD),
+                ft.Row([full_name, age, phone, email], wrap=True),
+                ft.ElevatedButton("Guardar paciente", on_click=save_patient),
+                ft.Divider(),
+                ft.Row(
+                    [
+                        search,
+                        ft.ElevatedButton("Buscar", on_click=lambda e: load_patients(search.value)),
+                        ft.ElevatedButton("Mostrar todos", on_click=lambda e: load_patients())
+                    ]
+                ),
+                patient_table
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
+
+    def doctors_view():
+        full_name = ft.TextField(label="Nombre del doctor", width=300)
+        specialty = ft.Dropdown(
+            label="Especialidad",
+            width=220,
+            options=[
+                ft.dropdown.Option("General"),
+                ft.dropdown.Option("Pediatra"),
+                ft.dropdown.Option("Cardiólogo"),
+                ft.dropdown.Option("Dermatólogo"),
+                ft.dropdown.Option("Ginecólogo"),
+                ft.dropdown.Option("Odontólogo")
+            ]
+        )
+        phone = ft.TextField(label="Teléfono", width=200)
+        search = ft.TextField(label="Buscar doctor", width=300)
+        doctor_table = ft.Column()
+
+        def load_doctors(filter_text=""):
+            doctor_table.controls.clear()
+            rows = get_doctors()
+
+            if filter_text.strip():
+                rows = [
+                    r for r in rows
+                    if filter_text.lower() in r["full_name"].lower()
+                    or filter_text.lower() in r["specialty"].lower()
+                ]
+
+            if not rows:
+                doctor_table.controls.append(ft.Text("No hay doctores registrados"))
+            else:
+                for row in rows:
+                    doctor_table.controls.append(
+                        ft.Container(
+                            content=ft.Row(
+                                [
+                                    ft.Text(f"ID: {row['id']}", width=60),
+                                    ft.Text(row["full_name"], width=260),
+                                    ft.Text(row["specialty"], width=180),
+                                    ft.Text(row["phone"], width=180),
+                                ]
+                            ),
+                            padding=10,
+                            border=ft.border.all(1, ft.Colors.BLACK12),
+                            border_radius=8
+                        )
+                    )
+            page.update()
+
+        def save_doctor(e):
+            if not full_name.value or not specialty.value or not phone.value:
+                show_message("Completa todos los campos del doctor", ft.Colors.RED)
+                return
+
+            conn = get_connection()
+            conn.execute("""
+                INSERT INTO doctors (full_name, specialty, phone)
+                VALUES (?, ?, ?)
+            """, (full_name.value, specialty.value, phone.value))
+            conn.commit()
+            conn.close()
+
+            full_name.value = ""
+            specialty.value = None
+            phone.value = ""
+
+            load_doctors()
+            show_message("Doctor guardado correctamente", ft.Colors.GREEN)
+
+        load_doctors()
+
+        return ft.Column(
+            [
+                ft.Text("Doctors", size=26, weight=ft.FontWeight.BOLD),
+                ft.Row([full_name, specialty, phone], wrap=True),
+                ft.ElevatedButton("Guardar doctor", on_click=save_doctor),
+                ft.Divider(),
+                ft.Row(
+                    [
+                        search,
+                        ft.ElevatedButton("Buscar", on_click=lambda e: load_doctors(search.value)),
+                        ft.ElevatedButton("Mostrar todos", on_click=lambda e: load_doctors())
+                    ]
+                ),
+                doctor_table
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
+
+    def appointments_view():
+        patient_dropdown = ft.Dropdown(label="Paciente", width=280)
+        doctor_dropdown = ft.Dropdown(label="Doctor", width=280)
+        appointment_date = ft.TextField(label="Fecha (YYYY-MM-DD)", width=180)
+        appointment_time = ft.TextField(label="Hora (HH:MM)", width=150)
+        status = ft.Dropdown(
+            label="Estado",
+            width=180,
+            options=[
+                ft.dropdown.Option("Programada"),
+                ft.dropdown.Option("Completada"),
+                ft.dropdown.Option("Cancelada"),
+                ft.dropdown.Option("Perdida")
+            ],
+            value="Programada"
+        )
+
+        notes = ft.TextField(label="Notas", multiline=True, min_lines=2, max_lines=3, width=350)
+        search = ft.TextField(label="Buscar cita", width=300)
+        appointment_table = ft.Column()
+
+        def load_dropdowns():
+            patient_dropdown.options = [
+                ft.dropdown.Option(key=str(p["id"]), text=p["full_name"])
+                for p in get_patients()
+            ]
+            doctor_dropdown.options = [
+                ft.dropdown.Option(key=str(d["id"]), text=f"{d['full_name']} - {d['specialty']}")
+                for d in get_doctors()
+            ]
+            page.update()
+
+        def load_appointments(filter_text=""):
+            appointment_table.controls.clear()
+            rows = get_appointments(filter_text)
+
+            if not rows:
+                appointment_table.controls.append(ft.Text("No hay citas registradas"))
+            else:
+                for row in rows:
+                    appointment_table.controls.append(
+                        ft.Container(
+                            content=ft.Column(
+                                [
+                                    ft.Text(f"Cita #{row['id']}", weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"Paciente: {row['patient_name']}"),
+                                    ft.Text(f"Doctor: {row['doctor_name']}"),
+                                    ft.Text(f"Especialidad: {row['specialty']}"),
+                                    ft.Text(f"Fecha: {row['appointment_date']}"),
+                                    ft.Text(f"Hora: {row['appointment_time']}"),
+                                    ft.Text(f"Estado: {row['status']}"),
+                                    ft.Text(f"Notas: {row['notes'] or ''}"),
+                                ]
+                            ),
+                            padding=12,
+                            border=ft.border.all(1, ft.Colors.BLACK12),
+                            border_radius=10
+                        )
+                    )
+            page.update()
+
+
+        def save_appointment(e):
+            if (
+                not patient_dropdown.value or
+                not doctor_dropdown.value or
+                not appointment_date.value or
+                not appointment_time.value or
+                not status.value
+            ):
+                show_message("Completa todos los campos obligatorios de la cita", ft.Colors.RED)
+                return
+
+            conn = get_connection()
+            try:
+                conn.execute("""
+                    INSERT INTO appointments (
+                        patient_id, doctor_id, appointment_date, appointment_time, status, notes
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    int(patient_dropdown.value),
+                    int(doctor_dropdown.value),
+                    appointment_date.value,
+                    appointment_time.value,
+                    status.value,
+                    notes.value
+                ))
+                conn.commit()
+
+                patient_dropdown.value = None
+                doctor_dropdown.value = None
+                appointment_date.value = ""
+                appointment_time.value = ""
+                status.value = "Programada"
+                notes.value = ""
+
+                load_appointments()
+                show_message("Cita guardada correctamente", ft.Colors.GREEN)
+
+            except sqlite3.IntegrityError:
+                show_message("Ese doctor ya tiene una cita en esa fecha y hora", ft.Colors.RED)
+            except Exception as ex:
+                show_message(f"Error al guardar cita: {ex}", ft.Colors.RED)
+            finally:
+                conn.close()
+
+        load_dropdowns()
+        load_appointments()
