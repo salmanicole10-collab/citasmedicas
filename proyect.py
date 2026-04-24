@@ -593,3 +593,23 @@ def main(page: ft.Page):
             ],
             scroll=ft.ScrollMode.AUTO
         )
+    
+    def open_dashboard(e=None):
+        content_area.content = dashboard_view()
+        page.update()
+
+    def open_patients(e=None):
+        content_area.content = patients_view()
+        page.update()
+
+    def open_doctors(e=None):
+        content_area.content = doctors_view()
+        page.update()
+
+    def open_appointments(e=None):
+        content_area.content = appointments_view()
+        page.update()
+
+    def open_reports(e=None):
+        content_area.content = reports_view()
+        page.update()
