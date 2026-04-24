@@ -638,3 +638,16 @@ def main(page: ft.Page):
     content_area.content = dashboard_view()
 
     page.add(
+        ft.Row(
+            [
+                sidebar,
+                ft.VerticalDivider(width=1),
+                ft.Container(content=content_area, expand=True, padding=10)
+            ],
+            expand=True,
+            vertical_alignment=ft.CrossAxisAlignment.START
+        )
+    )
+
+
+ft.run(main)
