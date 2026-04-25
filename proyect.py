@@ -265,13 +265,13 @@ def main(page: ft.Page):
             [
                 ft.Text("Patients", size=26, weight=ft.FontWeight.BOLD),
                 ft.Row([full_name, age, phone, email], wrap=True),
-                ft.ElevatedButton("Guardar paciente", on_click=save_patient),
+                ft.Button("Guardar paciente", on_click=save_patient),
                 ft.Divider(),
                 ft.Row(
                     [
                         search,
-                        ft.ElevatedButton("Buscar", on_click=lambda e: load_patients(search.value)),
-                        ft.ElevatedButton("Mostrar todos", on_click=lambda e: load_patients())
+                        ft.Button("Buscar", on_click=lambda e: load_patients(search.value)),
+                        ft.Button("Mostrar todos", on_click=lambda e: load_patients())
                     ]
                 ),
                 patient_table
@@ -355,13 +355,13 @@ def main(page: ft.Page):
             [
                 ft.Text("Doctors", size=26, weight=ft.FontWeight.BOLD),
                 ft.Row([full_name, specialty, phone], wrap=True),
-                ft.ElevatedButton("Guardar doctor", on_click=save_doctor),
+                ft.Button("Guardar doctor", on_click=save_doctor),
                 ft.Divider(),
                 ft.Row(
                     [
                         search,
-                        ft.ElevatedButton("Buscar", on_click=lambda e: load_doctors(search.value)),
-                        ft.ElevatedButton("Mostrar todos", on_click=lambda e: load_doctors())
+                        ft.Button("Buscar", on_click=lambda e: load_doctors(search.value)),
+                        ft.Button("Mostrar todos", on_click=lambda e: load_doctors())
                     ]
                 ),
                 doctor_table
@@ -486,13 +486,13 @@ def main(page: ft.Page):
                 ft.Row([patient_dropdown, doctor_dropdown], wrap=True),
                 ft.Row([appointment_date, appointment_time, status], wrap=True),
                 notes,
-                ft.ElevatedButton("Guardar cita", on_click=save_appointment),
+                ft.Button("Guardar cita", on_click=save_appointment),
                 ft.Divider(),
                 ft.Row(
                     [
                         search,
-                        ft.ElevatedButton("Buscar", on_click=lambda e: load_appointments(search.value)),
-                        ft.ElevatedButton("Mostrar todas", on_click=lambda e: load_appointments())
+                        ft.Button("Buscar", on_click=lambda e: load_appointments(search.value)),
+                        ft.Button("Mostrar todas", on_click=lambda e: load_appointments())
                     ]
                 ),
                 appointment_table
@@ -582,9 +582,9 @@ def main(page: ft.Page):
                 ft.Text("Reports", size=26, weight=ft.FontWeight.BOLD),
                 ft.Row(
                     [
-                        ft.ElevatedButton("Citas por estado", on_click=report_by_status),
-                        ft.ElevatedButton("Citas por doctor", on_click=report_by_doctor),
-                        ft.ElevatedButton("Reporte con CASE", on_click=report_case),
+                        ft.Button("Citas por estado", on_click=report_by_status),
+                        ft.Button("Citas por doctor", on_click=report_by_doctor),
+                        ft.Button("Reporte con CASE", on_click=report_case),
                     ],
                     wrap=True
                 ),
@@ -623,11 +623,11 @@ def main(page: ft.Page):
             [
                 ft.Text("Menú", size=22, weight=ft.FontWeight.BOLD),
                 ft.Divider(),
-                ft.ElevatedButton("Dashboard", width=190, on_click=open_dashboard),
-                ft.ElevatedButton("Patients", width=190, on_click=open_patients),
-                ft.ElevatedButton("Doctors", width=190, on_click=open_doctors),
-                ft.ElevatedButton("Appointments", width=190, on_click=open_appointments),
-                ft.ElevatedButton("Reports", width=190, on_click=open_reports),
+                ft.Button("Dashboard", width=190, on_click=open_dashboard),
+                ft.Button("Patients", width=190, on_click=open_patients),
+                ft.Button("Doctors", width=190, on_click=open_doctors),
+                ft.Button("Appointments", width=190, on_click=open_appointments),
+                ft.Button("Reports", width=190, on_click=open_reports),
                 ft.Divider(),
                 status_text
             ],
