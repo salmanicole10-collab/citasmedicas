@@ -1,5 +1,7 @@
 import flet as ft
 import sqlite3
+import re
+from datetime import datetime
 
 DB_NAME = "clinic_system.db"
 
@@ -29,9 +31,16 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             full_name TEXT NOT NULL,
             specialty TEXT NOT NULL,
-            phone TEXT NOT NULL
+            phone TEXT NOT NULL,
+            exequatur TEXT
         )
     """)
+
+    columns = cur.execute("PRAGMA table_info(doctors)").fetchall()
+    column_names = [col["name"] for col in columns]
+
+    if "exequatur" not in column_names:
+        cur.execute("ALTER TABLE doctors ADD COLUMN exequatur TEXT")
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS appointments (
@@ -48,13 +57,16 @@ def init_db():
         )
     """)
 
+    cur.execute("DROP VIEW IF EXISTS appointment_summary")
+
     cur.execute("""
-        CREATE VIEW IF NOT EXISTS appointment_summary AS
+        CREATE VIEW appointment_summary AS
         SELECT
             a.id,
             p.full_name AS patient_name,
             d.full_name AS doctor_name,
             d.specialty AS specialty,
+            d.exequatur AS exequatur,
             a.appointment_date,
             a.appointment_time,
             a.status,
