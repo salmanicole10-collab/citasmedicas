@@ -79,11 +79,34 @@ def init_db():
     conn.commit()
     conn.close()
     
+def valid_email(email):
+    if email.strip() == "":
+        return True
+    return re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email) is not None
+
+
+def valid_date(date_text):
+    try:
+        datetime.strptime(date_text, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+
+def valid_time(time_text):
+    try:
+        datetime.strptime(time_text, "%H:%M")
+        return True
+    except ValueError:
+        return False
+
+
 def main(page: ft.Page):
     page.title = "Sistema de Citas Médicas"
     page.padding = 15
-    page.window_width = 1200
-    page.window_height = 750
+    page.window.width = 1500
+    page.window.height = 900
+    page.window.center()
     page.scroll = ft.ScrollMode.AUTO
 
     init_db()
@@ -91,11 +114,15 @@ def main(page: ft.Page):
     content_area = ft.Container(expand=True)
     status_text = ft.Text("Sistema listo", color=ft.Colors.GREEN)
 
+    only_numbers = ft.NumbersOnlyInputFilter()
+    date_filter = ft.InputFilter(allow=True, regex_string=r"^[0-9-]*$")
+    time_filter = ft.InputFilter(allow=True, regex_string=r"^[0-9:]*$")
+
     def show_message(text, color=ft.Colors.BLUE):
         status_text.value = text
         status_text.color = color
         page.update()
-        
+
     def get_patients():
         conn = get_connection()
         rows = conn.execute("SELECT * FROM patients ORDER BY full_name").fetchall()
@@ -107,9 +134,10 @@ def main(page: ft.Page):
         rows = conn.execute("SELECT * FROM doctors ORDER BY full_name").fetchall()
         conn.close()
         return rows
-    
+
     def get_appointments(search_text=""):
         conn = get_connection()
+
         if search_text.strip():
             rows = conn.execute("""
                 SELECT * FROM appointment_summary
@@ -118,8 +146,10 @@ def main(page: ft.Page):
                    OR specialty LIKE ?
                    OR appointment_date LIKE ?
                    OR status LIKE ?
+                   OR exequatur LIKE ?
                 ORDER BY appointment_date, appointment_time
             """, (
+                f"%{search_text}%",
                 f"%{search_text}%",
                 f"%{search_text}%",
                 f"%{search_text}%",
@@ -131,9 +161,10 @@ def main(page: ft.Page):
                 SELECT * FROM appointment_summary
                 ORDER BY appointment_date, appointment_time
             """).fetchall()
+
         conn.close()
         return rows
-    
+
     def get_counts():
         conn = get_connection()
         cur = conn.cursor()
@@ -146,6 +177,7 @@ def main(page: ft.Page):
         canceled = cur.execute("SELECT COUNT(*) FROM appointments WHERE status='Cancelada'").fetchone()[0]
 
         conn.close()
+
         return {
             "patients": total_patients,
             "doctors": total_doctors,
@@ -162,47 +194,41 @@ def main(page: ft.Page):
             return ft.Container(
                 content=ft.Column(
                     [
-                        ft.Text(
-                            title,
-                            size=16,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.Colors.BLACK
-                        ),
-                        ft.Text(
-                            str(value),
-                            size=28,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.Colors.BLACK
-                        )
+                        ft.Text(title, size=17, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                        ft.Text(str(value), size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 ),
-                width=220,
+                width=190,
                 height=120,
                 padding=15,
                 border_radius=12,
                 bgcolor=ft.Colors.BLUE_50
             )
-        
+
         return ft.Column(
             [
-                ft.Text("Dashboard", size=26, weight=ft.FontWeight.BOLD),
+                ft.Text("Dashboard", size=28, weight=ft.FontWeight.BOLD),
                 ft.Text("Resumen general del sistema"),
-                ft.ResponsiveRow(
+                ft.Row(
                     [
-                        ft.Container(card("Pacientes", counts["patients"]), col={"sm": 6, "md": 4, "lg": 2}),
-                        ft.Container(card("Doctores", counts["doctors"]), col={"sm": 6, "md": 4, "lg": 2}),
-                        ft.Container(card("Citas", counts["appointments"]), col={"sm": 6, "md": 4, "lg": 2}),
-                        ft.Container(card("Programadas", counts["scheduled"]), col={"sm": 6, "md": 4, "lg": 2}),
-                        ft.Container(card("Completadas", counts["completed"]), col={"sm": 6, "md": 4, "lg": 2}),
-                        ft.Container(card("Canceladas", counts["canceled"]), col={"sm": 6, "md": 4, "lg": 2}),
-                    ]
+                        card("Pacientes", counts["patients"]),
+                        card("Doctores", counts["doctors"]),
+                        card("Citas", counts["appointments"]),
+                        card("Programadas", counts["scheduled"]),
+                        card("Completadas", counts["completed"]),
+                        card("Canceladas", counts["canceled"]),
+                    ],
+                    wrap=True,
+                    spacing=12,
+                    run_spacing=12
                 )
             ],
             spacing=20,
             scroll=ft.ScrollMode.AUTO
         )
+
 
     def patients_view():
         full_name = ft.TextField(label="Nombre completo", width=300)
